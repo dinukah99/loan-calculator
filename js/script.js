@@ -10,9 +10,12 @@ const errMsg = document.getElementById('error');
 
 function onLoanFormSubmit(e) {
     e.preventDefault();
+
+    resetUI();
     //Validate Input
     if (amountInput.value === '' || interestInput.value === '' || yearsInput.value === '') {
-        alert('Please fill in all fields!');
+        showError('Please fill in all fields!');
+        return;
     }
     const principal = parseFloat(amountInput.value);
     const monthlyInterest = parseFloat(interestInput.value) / 100 / 12;
@@ -31,17 +34,16 @@ function calculateResults(principal, monthlyInterest, numberOfPayments) {
     const interest = (monthly * numberOfPayments - principal).toFixed(2);
 
     if (isNaN(monthly)) {
-        alert('Please check your numbers');
-        return;
+        showError('Please check your numbers');
     } else {
         addResultsToDOM(monthly, total, interest);
     }
 }
 
 function addResultsToDOM(monthly, total, interest) {
-    monthly.innerText = '$' + monthly;
-    total.innerText = '$' + total;
-    interest.innerText = '$' + interest;
+    monthlyResult.innerText = '$' + monthly;
+    paymentResult.innerText = '$' + total;
+    interestResult.innerText = '$' + interest;
 
     showSpinnerAndResults(1);
 }
@@ -55,6 +57,23 @@ function showSpinnerAndResults(seconds) {
         loanResults.style.display = 'block';
     }, seconds * 1000);
 }
+
+function showError(message) {
+    errMsg.style.transform = 'translateY(-450px) translateX(-50%)';
+    errMsg.innerText = message;
+
+    setTimeout(() => {
+        errMsg.style.transform = 'translateY(-1000px) translateX(-50%)';
+    }, 3000);
+}
+
+function resetUI() {
+    loanResults.style.display = 'none';
+    monthlyResult.innerText = '';
+    paymentResult.innerText = '';
+    interestResult.innerText = '';
+}
+
 
 //Event Listeners
 loanForm.addEventListener('submit', onLoanFormSubmit);
